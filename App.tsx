@@ -5,6 +5,7 @@ import React, { useState } from 'react'
 import {StyleSheet, Text, View, TouchableOpacity, Alert, ImageBackground, Image, TextInput, ScrollView, SafeAreaView, Button} from 'react-native'
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import { SafeAreaProvider  } from 'react-native-safe-area-context';
 import {Camera} from 'expo-camera'
@@ -18,85 +19,60 @@ function HomeScreen({ navigation }:any) {
       <Text>Home Screen</Text>
       <Button 
         title='Go to Details'
-        onPress={()=> navigation.navigate('Details',{
-          itemId : 86,
-          otherParam : 'anything you want here'
-        })}
+        onPress={()=> navigation.navigate('Details')}
        />
     </View>
   );
 };
 
-function DetailsScreen({ route, navigation }:any) {
-  const {itemId, otherParam} = route.params;
+function DetailsScreen() {
   return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Text>Details Screen</Text>
-      <Text>itemId: {JSON.stringify(itemId)}</Text>
-      <Text>otherParam: {JSON.stringify(otherParam)}</Text>
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Text>Details!</Text>
+    </View>
+  );
+}
+
+function SettingsScreen({ navigation }) {
+  return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Text>Settings screen</Text>
       <Button
-        title="Go to Details... again"
-        onPress={() => navigation.push('Details', {
-          itemId : Math.floor(Math.random() * 100)
-        })}
+        title="Go to Details"
+        onPress={() => navigation.navigate('Details')}
       />
-
-      <Button 
-        title='Go to Home'
-        onPress={()=> navigation.navigate('Home')}
-      />
-      <Button 
-        title='Go back'
-        onPress={()=> navigation.goBack()}
-      />
-       <Button 
-        title='Go back to first screen in stack'
-        onPress={()=> navigation.popToTop()}
-      />
-    </View>
-  );
-};
-function ProfileScreen({ navigation }:any) {
-  return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Text>Profile screen</Text>
-      <Button title="Go back" onPress={() => navigation.goBack()} />
     </View>
   );
 }
 
-function LogoTitle() {
+const HomeStack = createNativeStackNavigator();
+function HomeStackScreen() {
   return (
-    <Image
-      style={{ width: 50, height: 50 }}
-      source={require('./assets/icon.png')}
-    />
+    <HomeStack.Navigator>
+      <HomeStack.Screen name="Home" component={HomeScreen} />
+      <HomeStack.Screen name="Details" component={DetailsScreen} />
+    </HomeStack.Navigator>
   );
 }
 
+const SettingsStack = createNativeStackNavigator();
+function SettingsStackScreen() {
+  return (
+    <SettingsStack.Navigator>
+      <SettingsStack.Screen name="Settings" component={SettingsScreen} />
+      <SettingsStack.Screen name="Details" component={DetailsScreen} />
+    </SettingsStack.Navigator>
+  );
+}
 
-const Stack = createNativeStackNavigator();
+const Tab = createBottomTabNavigator();
+
 
 export default function App() {
 
-  const [number, setNumber] = useState(0);
-  const [isChecked, setChecked] = useState(false);
-
-  const memberGroup = ["Tom", "Rick", "Jhon", "Danny", "Xia"];
-  
-  const checks = () => {
-    setChecked(!isChecked)
-  }
-  const increase = ()=> {
-    setNumber(number+1)
-  };
-  const decrease = ()=> {
-    setNumber(number-1)
-  };
-
   return (
       <NavigationContainer>
-        <Stack.Navigator>
+        {/* <Stack.Navigator>
           <Stack.Screen name="Home" component={HomeScreen} options={{
             title:'My home',
             headerStyle : {
@@ -107,7 +83,17 @@ export default function App() {
             }} />
           <Stack.Screen name="Details" component={DetailsScreen} />
 
-        </Stack.Navigator>
+        </Stack.Navigator> */}
+        
+        <Tab.Navigator screenOptions={{headerShown : false}}>
+          <Tab.Screen
+            name='Home' component={HomeStackScreen}
+          />
+          <Tab.Screen
+            name='Settings' component={SettingsStackScreen}
+          />
+        </Tab.Navigator>
+
       </NavigationContainer>
     // <View style={{flex:1, alignItems: 'center',justifyContent: 'center'}}>
     //   <TouchableOpacity onPress={checks} style={isChecked ? {backgroundColor:"red", padding: 10} : {backgroundColor:"green", padding : 10}}>
