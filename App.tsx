@@ -1,7 +1,7 @@
 import {StatusBar} from 'expo-status-bar'
 import * as MediaLibrary from 'expo-media-library';
 import Checkbox from 'expo-checkbox';
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {StyleSheet, Text, View, TouchableOpacity, Alert, ImageBackground, Image, TextInput, ScrollView, SafeAreaView, Button} from 'react-native'
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -12,6 +12,25 @@ import {Camera} from 'expo-camera'
 import Axios from 'axios';
 
 // import * as SMS from 'expo-sms';
+
+const store = {
+  product_brand : [
+    "brandA",
+    "brandB",
+  ],
+  product : [
+    {
+      name : 'product_01',
+      type : 'A',
+      desc : 'product desc A'
+    },
+    {
+      name : 'product_02',
+      type : 'B',
+      desc : 'product desc B'
+    },
+  ]
+};
 
 function HomeScreen({ navigation }:any) {
   return (
@@ -44,6 +63,23 @@ function SettingsScreen({ navigation }) {
     </View>
   );
 }
+function ProductScreen({ navigation }) {
+  const [getData, setGetData] = useState<any>('');
+
+  useEffect(()=> {
+
+    setTimeout(()=> {
+      setGetData(store.product_brand);
+
+    }, 2000)
+  },[store])
+
+  return (
+    <View style={{ }}>
+      <Text>product</Text>
+    </View>
+  );
+}
 
 const HomeStack = createNativeStackNavigator();
 function HomeStackScreen() {
@@ -64,6 +100,19 @@ function SettingsStackScreen() {
     </SettingsStack.Navigator>
   );
 }
+const ProductStack = createNativeStackNavigator();
+function ProductStackScreen() {
+  
+  return (
+    <ProductStack.Navigator>
+      
+      {/* <ProductStack.Screen name="Settings" component={SettingsScreen} /> */}
+    
+      <ProductStack.Screen name="Product" component={ProductScreen} />
+    </ProductStack.Navigator>
+  );
+}
+
 
 const Tab = createBottomTabNavigator();
 
@@ -72,25 +121,17 @@ export default function App() {
 
   return (
       <NavigationContainer>
-        {/* <Stack.Navigator>
-          <Stack.Screen name="Home" component={HomeScreen} options={{
-            title:'My home',
-            headerStyle : {
-              backgroundColor : "orange"
-            },
-            headerTintColor: '#fff',
-            headerTitle : (props)=> <LogoTitle {...props}/>
-            }} />
-          <Stack.Screen name="Details" component={DetailsScreen} />
-
-        </Stack.Navigator> */}
-        
+      
         <Tab.Navigator screenOptions={{headerShown : false}}>
           <Tab.Screen
             name='Home' component={HomeStackScreen}
           />
           <Tab.Screen
             name='Settings' component={SettingsStackScreen}
+          />
+
+          <Tab.Screen 
+            name='Product' component={ProductStackScreen} 
           />
         </Tab.Navigator>
 
