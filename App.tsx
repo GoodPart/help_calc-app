@@ -2,7 +2,7 @@ import {StatusBar} from 'expo-status-bar'
 import * as MediaLibrary from 'expo-media-library';
 import Checkbox from 'expo-checkbox';
 import React, { useState, useEffect } from 'react'
-import {StyleSheet, Text, View, TouchableOpacity, Alert, ImageBackground, Image, TextInput, ScrollView, SafeAreaView, Button} from 'react-native'
+import {StyleSheet, Text, View, TouchableOpacity, Alert, ImageBackground, Image, TextInput, ScrollView, SafeAreaView, Button, FlatList, Modal} from 'react-native'
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -63,23 +63,80 @@ function SettingsScreen({ navigation }) {
     </View>
   );
 }
-function ProductScreen({ navigation }) {
-  const [getData, setGetData] = useState<any>('');
 
-  useEffect(()=> {
-
-    setTimeout(()=> {
-      setGetData(store.product_brand);
-
-    }, 2000)
-  },[store])
-
+const renderItem = (item:any) => {
+// console.log(item)
   return (
-    <View style={{ }}>
-      <Text>product</Text>
+    // <></>
+    <View>
+        <TouchableOpacity onPress={()=> alert(item)}>
+          <Text>{item.item}</Text>
+        </TouchableOpacity>
     </View>
+  )
+};
+
+const ModalComponent = ({
+  showModal,
+  setShowModal,
+  children, // 컴포넌트를 자식으로 넘겨받는다.
+}) => {
+  return (
+    <>
+      {showModal ? (
+        <View >
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={showModal}
+            onRequestClose={() => {
+              setShowModal(!showModal);
+            }}>
+            <View style={{flex:1, justifyContent: 'center', alignContent: 'center', backgroundColor:'orange'}}>
+              {children}
+              <Button title='close' onPress={()=> setShowModal(!showModal)} />
+            </View>
+          </Modal>
+        </View>
+      ) : null}
+    </>
   );
+};
+
+const ProdItemComponent = (data:any)=> {
+  console.log(data)
+  return (
+    <Text>asd</Text>
+  )
 }
+
+function ProductScreen({ navigation, params }:any) {
+
+  const [modalVisible, setModalVisible] = useState(false);
+  
+ return (
+  <View >
+   
+   <ModalComponent showModal={modalVisible} setShowModal={setModalVisible} >
+      <ProdItemComponent 
+        data={params}
+      />
+    </ModalComponent>
+
+    <View>
+      <FlatList 
+        data={params}
+        renderItem={({item})=>(
+        <Button 
+        title={item}
+        onPress={()=> setModalVisible(true)}
+         />
+          ) }
+      />
+    </View>
+  </View>
+ )
+};
 
 const HomeStack = createNativeStackNavigator();
 function HomeStackScreen() {
@@ -101,14 +158,24 @@ function SettingsStackScreen() {
   );
 }
 const ProductStack = createNativeStackNavigator();
-function ProductStackScreen() {
-  
+
+function ProductStackScreen({navigation}:any) {
+  const [getData, setGetData] = useState<any>([]);
+  const [getProductData, setGetProductData] = useState<any>([]);
+
+  useEffect(()=> {
+        setGetData(store.product_brand);
+        setGetProductData(store.product);
+
+  },[store])
+
   return (
     <ProductStack.Navigator>
-      
-      {/* <ProductStack.Screen name="Settings" component={SettingsScreen} /> */}
+      <ProductStack.Screen name="Product">
+        {(props)=> <ProductScreen {...props} params={getData} /> }
+      </ProductStack.Screen>
     
-      <ProductStack.Screen name="Product" component={ProductScreen} />
+      {/* <ProductStack.Screen name="ProductItemScreen" component={ProductItemScreen} /> */}
     </ProductStack.Navigator>
   );
 }
